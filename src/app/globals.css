@@ -8,12 +8,12 @@
  * Changing the palette means editing exactly this block.
  */
 :root {
-  --color-bg: 240 240 236; /* #F0F0EC soft warm gray — not stark white */
-  --color-surface: 250 250 248; /* #FAFAF8 cards sit slightly lighter */
-  --color-ink: 28 28 26; /* #1C1C1A */
-  --color-muted: 110 110 104; /* #6E6E68 */
-  --color-accent: 13 128 76; /* #0D804C terminal green (dark enough for light bg) */
-  --color-line: 219 219 213; /* hairline borders */
+  --color-bg: 243 246 244; /* #F3F6F4 cool mint-tinted off-white */
+  --color-surface: 251 252 251; /* #FBFCFB cards sit slightly lighter */
+  --color-ink: 26 29 27; /* #1A1D1B */
+  --color-muted: 104 110 106; /* #686E6A */
+  --color-accent: 13 122 73; /* #0D7A49 terminal green */
+  --color-line: 217 224 220; /* #D9E0DC hairline borders, same tint */
 }
 
 .dark {

@@ -39,10 +39,10 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <DashboardNav />
-          <main className="flex-1 w-full">
+          <main className="flex-1 w-full flex flex-col">
             <PageTransition>{children}</PageTransition>
           </main>
-          <footer className="border-t border-line py-8 mt-16">
+          <footer className="border-t border-line py-8">
             <div className="mx-auto max-w-5xl px-6 flex items-center justify-between text-sm text-muted">
               <span>© {new Date().getFullYear()} Mark Protsyuk</span>
               <span className="font-mono text-xs">

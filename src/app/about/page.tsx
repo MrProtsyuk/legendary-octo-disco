@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HeroConstellation } from "@/components/motion/HeroConstellation";
+import { SpotlightGlyph } from "@/components/motion/PageGlyphs";
 
 export const metadata: Metadata = {
   title: "About",
@@ -11,12 +12,15 @@ export const metadata: Metadata = {
 // engineering background → the through-line → what's next.
 export default function AboutPage() {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden flex-1">
       <HeroConstellation variant="ambient" />
       <section className="relative mx-auto max-w-2xl px-6 py-16">
-      <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
-        About
-      </h1>
+      <div className="flex items-center gap-4">
+        <SpotlightGlyph className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 text-accent" />
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
+          About
+        </h1>
+      </div>
 
       <div className="mt-8 space-y-6 text-ink leading-relaxed">
         <p>

@@ -33,7 +33,8 @@ export function HeroConstellation({
 
     const GRID = 48; // px between dots
     const RADIUS = 160; // cursor influence radius (hero only)
-    const PULSE_PERIOD = 4000; // ms — shared clock for sweep and breathe
+    const HERO_PERIOD = 3000; // ms — hero diagonal sweep cycle
+    const AMBIENT_PERIOD = 4000; // ms — ambient breathe cycle
     const PULSE_BAND = 0.09; // width of the traveling band (0–1 diagonal space)
     let width = 0;
     let height = 0;
@@ -66,15 +67,15 @@ export function HeroConstellation({
       ctx.clearRect(0, 0, width, height);
       const accent = accentColor();
 
-      // Slow sine breathe on the shared 4s clock; static render sits at base.
+      // Slow sine breathe on a 4s clock; static render sits at base.
       const breathe = animating
         ? (Math.sin(
-            (performance.now() / PULSE_PERIOD) * Math.PI * 2 - Math.PI / 2
+            (performance.now() / AMBIENT_PERIOD) * Math.PI * 2 - Math.PI / 2
           ) +
             1) /
           2
         : 0;
-      const alpha = 0.07 + breathe * 0.06; // very slight, by design
+      const alpha = 0.1 + breathe * 0.05; // 0.10 at rest → 0.15 at peak
 
       // Lines between the dots — even fainter than the dots so the grid
       // reads as graph paper, not a net. One stroke per row/column.
@@ -110,7 +111,7 @@ export function HeroConstellation({
       // Pulse front travels the 0–1 diagonal each period, overshooting both
       // ends so the band fully enters and exits. Static render → no pulse.
       const progress = animating
-        ? (performance.now() % PULSE_PERIOD) / PULSE_PERIOD
+        ? (performance.now() % HERO_PERIOD) / HERO_PERIOD
         : -1;
       const front = progress * (1 + PULSE_BAND * 4) - PULSE_BAND * 2;
 
@@ -180,6 +181,14 @@ export function HeroConstellation({
     resize();
     draw();
 
+    // Track the container's size, not just the window — content growth
+    // (images loading, longer lists) must extend the grid to the bottom.
+    const observer = new ResizeObserver(() => {
+      resize();
+      draw();
+    });
+    observer.observe(canvas);
+
     window.addEventListener("resize", resize);
     if (!reducedMotion) {
       animating = true;
@@ -191,6 +200,7 @@ export function HeroConstellation({
     }
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseout", onLeave);

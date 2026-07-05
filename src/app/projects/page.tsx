@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { HeroConstellation } from "@/components/motion/HeroConstellation";
+import { LaptopGlyph } from "@/components/motion/PageGlyphs";
 
 export const metadata: Metadata = {
   title: "Work",
@@ -17,12 +18,15 @@ export default async function ProjectsPage() {
   });
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative overflow-hidden flex-1">
       <HeroConstellation variant="ambient" />
       <section className="relative mx-auto max-w-5xl px-6 py-16">
-      <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
-        Work
-      </h1>
+      <div className="flex items-center gap-4">
+        <LaptopGlyph className="h-11 w-11 sm:h-12 sm:w-12 shrink-0 text-accent" />
+        <h1 className="font-display text-3xl sm:text-4xl font-semibold tracking-tight">
+          Work
+        </h1>
+      </div>
       <p className="mt-3 text-muted max-w-xl">
         Selected projects — what I built, what I chose, and why.
       </p>
