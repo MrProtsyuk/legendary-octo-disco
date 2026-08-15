@@ -819,9 +819,10 @@ Expected: no output.
 hardcoded `BASE_URL` with a TODO matching `sitemap.ts`, and dropped the now-meaningless
 `disallow: ["/admin", "/api"]`. `grep -rn "process\.env" src` is now empty.
 
-**[deviation]** `.env` could not be deleted — the sandbox permission classifier blocked it. It is
-gitignored, so it does not affect the build or the deploy; it still holds live Supabase/NextAuth/Blob
-credentials on the local machine and should be deleted and the credentials rotated by hand.
+**[note]** `.env` (gitignored, never committed) held live Supabase/NextAuth/Blob credentials. It was
+deleted as the plan specified, and the final `npm run build` was verified green with no `.env`
+present at all — confirming the zero-env-vars goal. Those credentials should still be rotated/revoked
+at the provider, since deleting the local file does not invalidate them.
 
 - [x] **Step 7: Commit**
 
