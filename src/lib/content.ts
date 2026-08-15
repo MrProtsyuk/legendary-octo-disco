@@ -6,6 +6,12 @@ import type { Project, WritingPost } from "@/types";
 const PROJECTS_DIR = path.join(process.cwd(), "content/projects");
 const WRITING_DIR = path.join(process.cwd(), "content/writing");
 
+// Slugs arrive from URL segments, so keep them to a single safe path component —
+// otherwise a crafted slug like "../../secrets" escapes the content directory.
+function isSafeSlug(slug: string): boolean {
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 function readSlugs(dir: string): string[] {
   if (!fs.existsSync(dir)) return [];
   return fs
@@ -15,6 +21,7 @@ function readSlugs(dir: string): string[] {
 }
 
 function readProject(slug: string): Project | null {
+  if (!isSafeSlug(slug)) return null;
   const filePath = path.join(PROJECTS_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
   const { data, content } = matter(fs.readFileSync(filePath, "utf-8"));
@@ -43,6 +50,7 @@ export function getProjectBySlug(slug: string): Project | null {
 }
 
 function readPost(slug: string): WritingPost | null {
+  if (!isSafeSlug(slug)) return null;
   const filePath = path.join(WRITING_DIR, `${slug}.md`);
   if (!fs.existsSync(filePath)) return null;
   const { data, content } = matter(fs.readFileSync(filePath, "utf-8"));
