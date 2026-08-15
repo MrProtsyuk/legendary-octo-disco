@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import type { Project } from "@prisma/client";
+import type { Project } from "@/types";
 
 export function ProjectCard({ project }: { project: Project }) {
   return (

@@ -20,9 +20,6 @@ function isActive(pathname: string, href: string) {
 export function DashboardNav() {
   const pathname = usePathname();
 
-  // The admin area has its own chrome — keep the public nav out of it.
-  if (pathname.startsWith("/admin")) return null;
-
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-md">
       <nav className="mx-auto max-w-5xl px-6 h-16 flex items-center justify-between">

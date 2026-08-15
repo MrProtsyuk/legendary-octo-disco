@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { WritingPost } from "@prisma/client";
+import type { WritingPost } from "@/types";
 import { formatDate } from "@/lib/utils";
 import readingTime from "reading-time";
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { prisma } from "@/lib/prisma";
+import { getAllProjects } from "@/lib/content";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { HeroConstellation } from "@/components/motion/HeroConstellation";
 import { LaptopGlyph } from "@/components/motion/PageGlyphs";
@@ -9,13 +9,8 @@ export const metadata: Metadata = {
   description: "Selected projects — what I've built and why.",
 };
 
-export const dynamic = "force-dynamic";
-
-export default async function ProjectsPage() {
-  // Fetched server-side directly via Prisma (§4.3) — no client fetch.
-  const projects = await prisma.project.findMany({
-    orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-  });
+export default function ProjectsPage() {
+  const projects = getAllProjects();
 
   return (
     <div className="relative overflow-hidden flex-1">
@@ -40,7 +35,7 @@ export default async function ProjectsPage() {
       ) : (
         <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+            <ProjectCard key={project.slug} project={project} />
           ))}
         </div>
       )}
