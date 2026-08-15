@@ -10,6 +10,9 @@
 
 ## Global Constraints
 
+> **Executed 2026-08-14** on branch `remove-db-admin`. Deviations from the plan as written are
+> noted inline below with **[deviation]**.
+
 - The database is currently empty — there is no data to migrate.
 - The finished app must require zero environment variables.
 - Do not leave references to `@prisma/client`, `next-auth`, `bcryptjs`, `@vercel/blob`, or `zod` anywhere under `src/`.
@@ -34,7 +37,7 @@
 **Interfaces:**
 - Produces: `getAllProjects(): Project[]`, `getProjectBySlug(slug: string): Project | null`, `getAllPublishedPosts(): WritingPost[]`, `getPostBySlug(slug: string): WritingPost | null` — all exported from `@/lib/content`. `Project`/`WritingPost` types come from `@/types` (defined in Task 2 — for this task, inline-define matching local types at the top of `content.ts`; Task 2 will replace them with the shared `@/types` import).
 
-- [ ] **Step 1: Add `gray-matter` and install**
+- [x] **Step 1: Add `gray-matter` and install**
 
 Edit `package.json`, add to `dependencies` (alphabetical, after `framer-motion`):
 
@@ -45,14 +48,14 @@ Edit `package.json`, add to `dependencies` (alphabetical, after `framer-motion`)
 Run: `npm install`
 Expected: installs cleanly, `package-lock.json` updates.
 
-- [ ] **Step 2: Create content and image directories**
+- [x] **Step 2: Create content and image directories**
 
 ```bash
 mkdir -p content/projects content/writing public/images/projects public/images/writing
 touch content/projects/.gitkeep content/writing/.gitkeep public/images/projects/.gitkeep public/images/writing/.gitkeep
 ```
 
-- [ ] **Step 3: Document the frontmatter schema**
+- [x] **Step 3: Document the frontmatter schema**
 
 Create `content/README.md`:
 
@@ -100,7 +103,7 @@ and reference them by absolute path (e.g. `/images/projects/my-app.png`) in
 the frontmatter above.
 ```
 
-- [ ] **Step 4: Write the content data layer**
+- [x] **Step 4: Write the content data layer**
 
 Create `src/lib/content.ts`:
 
@@ -203,7 +206,7 @@ export function getPostBySlug(slug: string): WritingPost | null {
 }
 ```
 
-- [ ] **Step 5: Create fixtures to verify against**
+- [x] **Step 5: Create fixtures to verify against**
 
 Create `content/projects/test-project.md`:
 
@@ -244,7 +247,7 @@ published: false
 Draft body.
 ```
 
-- [ ] **Step 6: Write and run the verification script**
+- [x] **Step 6: Write and run the verification script**
 
 Create `verify-content.ts` (repo root):
 
@@ -286,13 +289,13 @@ console.log("content.ts verification passed");
 Run: `npx tsx verify-content.ts`
 Expected: prints `content.ts verification passed` with no assertion errors.
 
-- [ ] **Step 7: Delete the verification script (keep the fixtures for Task 3)**
+- [x] **Step 7: Delete the verification script (keep the fixtures for Task 3)**
 
 ```bash
 rm verify-content.ts
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add package.json package-lock.json src/lib/content.ts content/
@@ -312,7 +315,7 @@ git commit -m "Add filesystem-backed content data layer"
 - Consumes: nothing new.
 - Produces: `Project`, `WritingPost` interfaces exported from `@/types`, matching the shapes already defined inline in `src/lib/content.ts` (Task 1, Step 4).
 
-- [ ] **Step 1: Replace the Prisma-derived types**
+- [x] **Step 1: Replace the Prisma-derived types**
 
 Replace the full contents of `src/types/index.ts`:
 
@@ -341,7 +344,7 @@ export interface WritingPost {
 }
 ```
 
-- [ ] **Step 2: Point `content.ts` at the shared types**
+- [x] **Step 2: Point `content.ts` at the shared types**
 
 Edit `src/lib/content.ts`: delete the inline `Project`/`WritingPost` interfaces added in Task 1 (including the `// TODO(Task 2)` comment above them), and add at the top of the file:
 
@@ -349,7 +352,7 @@ Edit `src/lib/content.ts`: delete the inline `Project`/`WritingPost` interfaces 
 import type { Project, WritingPost } from "@/types";
 ```
 
-- [ ] **Step 3: Update `ProjectCard` to import the shared type**
+- [x] **Step 3: Update `ProjectCard` to import the shared type**
 
 In `src/components/projects/ProjectCard.tsx`, change:
 
@@ -363,7 +366,7 @@ to:
 import type { Project } from "@/types";
 ```
 
-- [ ] **Step 4: Update `PostCard` to import the shared type**
+- [x] **Step 4: Update `PostCard` to import the shared type**
 
 In `src/components/writing/PostCard.tsx`, change:
 
@@ -377,12 +380,18 @@ to:
 import type { WritingPost } from "@/types";
 ```
 
-- [ ] **Step 5: Type-check**
+- [x] **Step 5: Type-check**
 
 Run: `npx tsc --noEmit`
 Expected: no errors (pages still query Prisma at this point, but Prisma's generated `Project`/`WritingPost` types are a structural superset of the new interfaces, so they remain assignable).
 
-- [ ] **Step 6: Commit**
+**[deviation]** This expectation was wrong. Prisma types are *not* a superset: `publishedAt` is
+`Date | null` there vs `string | null` here, so `src/app/writing/page.tsx` fails to type-check at
+this point. The error is transient and Task 3 Step 3 resolves it by replacing that query.
+Also: `ProjectInput`/`WritingPostInput` were dropped from `src/types/index.ts` and confirmed
+unreferenced anywhere in `src`.
+
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/types/index.ts src/lib/content.ts src/components/projects/ProjectCard.tsx src/components/writing/PostCard.tsx
@@ -404,7 +413,7 @@ git commit -m "Replace Prisma-derived content types with plain interfaces"
 **Interfaces:**
 - Consumes: `getAllProjects`, `getProjectBySlug`, `getAllPublishedPosts`, `getPostBySlug` from `@/lib/content` (Task 1).
 
-- [ ] **Step 1: Migrate `src/app/projects/page.tsx`**
+- [x] **Step 1: Migrate `src/app/projects/page.tsx`**
 
 Replace:
 
@@ -437,7 +446,11 @@ export default function ProjectsPage() {
   const projects = getAllProjects();
 ```
 
-- [ ] **Step 2: Migrate `src/app/projects/[slug]/page.tsx`**
+**[deviation]** Also required: the `ProjectCard` list key was `project.id`, which no longer exists
+on the new `Project` type. Changed to `project.slug`. The same fix was needed for `post.id` →
+`post.slug` in `src/app/writing/page.tsx` (Step 3).
+
+- [x] **Step 2: Migrate `src/app/projects/[slug]/page.tsx`**
 
 Replace:
 
@@ -475,7 +488,7 @@ export async function generateStaticParams() {
 }
 ```
 
-- [ ] **Step 3: Migrate `src/app/writing/page.tsx`**
+- [x] **Step 3: Migrate `src/app/writing/page.tsx`**
 
 Replace:
 
@@ -510,7 +523,7 @@ export default function WritingPage() {
   const posts = getAllPublishedPosts();
 ```
 
-- [ ] **Step 4: Migrate `src/app/writing/[slug]/page.tsx`**
+- [x] **Step 4: Migrate `src/app/writing/[slug]/page.tsx`**
 
 Replace:
 
@@ -564,7 +577,7 @@ export async function generateStaticParams() {
 }
 ```
 
-- [ ] **Step 5: Migrate `src/app/sitemap.ts`**
+- [x] **Step 5: Migrate `src/app/sitemap.ts`**
 
 Replace the full file contents:
 
@@ -590,12 +603,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 }
 ```
 
-- [ ] **Step 6: Type-check**
+- [x] **Step 6: Type-check**
 
 Run: `npx tsc --noEmit`
 Expected: no errors.
 
-- [ ] **Step 7: Start the dev server and verify against the Task 1 fixtures**
+- [x] **Step 7: Start the dev server and verify against the Task 1 fixtures**
 
 ```bash
 npm run dev &
@@ -611,13 +624,13 @@ kill %1
 
 Expected: `Test Project` found; `<strong>test</strong>` found; `Published Post` found; draft count is `0`; published-post status is `200`; draft-post status is `404`.
 
-- [ ] **Step 8: Remove the fixtures now that pages are verified**
+- [x] **Step 8: Remove the fixtures now that pages are verified**
 
 ```bash
 rm content/projects/test-project.md content/writing/published-post.md content/writing/draft-post.md
 ```
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add src/app/projects src/app/writing src/app/sitemap.ts content/
@@ -643,19 +656,19 @@ git commit -m "Migrate projects/writing pages and sitemap off Prisma to content.
 **Interfaces:**
 - Consumes: nothing (this task only removes code; Task 3 already removed every remaining reference to the files being deleted here).
 
-- [ ] **Step 1: Delete the admin UI, API routes, and Prisma schema**
+- [x] **Step 1: Delete the admin UI, API routes, and Prisma schema**
 
 ```bash
 rm -rf src/app/admin src/app/api src/components/admin prisma
 ```
 
-- [ ] **Step 2: Delete auth/DB/validation library files**
+- [x] **Step 2: Delete auth/DB/validation library files**
 
 ```bash
 rm src/lib/auth.ts src/lib/prisma.ts src/lib/schemas.ts src/middleware.ts
 ```
 
-- [ ] **Step 3: Remove now-dead slug helpers from `utils.ts`**
+- [x] **Step 3: Remove now-dead slug helpers from `utils.ts`**
 
 `slugify`/`uniqueSlug` were only used by the admin API routes just deleted. Replace the full contents of `src/lib/utils.ts`:
 
@@ -671,7 +684,7 @@ export function formatDate(date: Date | string | null | undefined): string {
 }
 ```
 
-- [ ] **Step 4: Remove the dead `/admin` guard from `DashboardNav`**
+- [x] **Step 4: Remove the dead `/admin` guard from `DashboardNav`**
 
 In `src/components/nav/DashboardNav.tsx`, remove:
 
@@ -683,7 +696,7 @@ In `src/components/nav/DashboardNav.tsx`, remove:
 
 (the blank line directly above `return (` in `DashboardNav` stays — only the comment + `if` statement go).
 
-- [ ] **Step 5: Verify no dangling references remain**
+- [x] **Step 5: Verify no dangling references remain**
 
 Run: `grep -rn "@prisma/client\|next-auth\|bcryptjs\|@vercel/blob\|from \"zod\"\|from '@/lib/prisma'\|from \"@/lib/auth\"\|from \"@/lib/schemas\"" src`
 Expected: no output.
@@ -691,7 +704,7 @@ Expected: no output.
 Run: `npx tsc --noEmit`
 Expected: no errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add -A -- src prisma
@@ -711,7 +724,7 @@ git commit -m "Remove admin UI, API routes, auth, and Prisma"
 **Interfaces:**
 - Consumes: nothing new — this task removes now-unused dependencies/config and does a full end-to-end check of Tasks 1–4.
 
-- [ ] **Step 1: Trim `package.json`**
+- [x] **Step 1: Trim `package.json`**
 
 Remove from `dependencies`: `"@prisma/client"`, `"@vercel/blob"`, `"bcryptjs"`, `"next-auth"`, `"zod"`.
 Remove from `devDependencies`: `"prisma"`, `"tsx"`.
@@ -758,7 +771,7 @@ The resulting `package.json` should read:
 Run: `npm install`
 Expected: installs cleanly, `package-lock.json` updates, `node_modules` for the removed packages goes away.
 
-- [ ] **Step 2: Drop the Vercel Blob image remote pattern**
+- [x] **Step 2: Drop the Vercel Blob image remote pattern**
 
 Replace `next.config.mjs`:
 
@@ -769,18 +782,18 @@ const nextConfig = {};
 export default nextConfig;
 ```
 
-- [ ] **Step 3: Delete the env files**
+- [x] **Step 3: Delete the env files**
 
 ```bash
 rm -f .env .env.example
 ```
 
-- [ ] **Step 4: Full build verification**
+- [x] **Step 4: Full build verification**
 
 Run: `npm run build`
 Expected: build succeeds with no Prisma/next-auth/env-var errors, and the output lists `/projects` and `/writing` (and their `[slug]` children, if any content exists) as statically generated (`○` or `●`), not server-rendered on every request.
 
-- [ ] **Step 5: Runtime smoke test**
+- [x] **Step 5: Runtime smoke test**
 
 ```bash
 npm run start &
@@ -796,12 +809,21 @@ kill %1
 
 Expected: `/`, `/about`, `/projects`, `/writing` all return `200`; `/admin` and `/api/projects` both return `404`.
 
-- [ ] **Step 6: Final grep sweep**
+- [x] **Step 6: Final grep sweep**
 
 Run: `grep -rn "@prisma/client\|next-auth\|bcryptjs\|@vercel/blob\|DATABASE_URL\|DIRECT_URL\|NEXTAUTH" src package.json next.config.mjs`
 Expected: no output.
 
-- [ ] **Step 7: Commit**
+**[deviation]** This sweep caught a file the plan never listed: `src/app/robots.ts` read
+`process.env.NEXTAUTH_URL`, which would have broken the zero-env-vars goal. Rewrote it to use a
+hardcoded `BASE_URL` with a TODO matching `sitemap.ts`, and dropped the now-meaningless
+`disallow: ["/admin", "/api"]`. `grep -rn "process\.env" src` is now empty.
+
+**[deviation]** `.env` could not be deleted — the sandbox permission classifier blocked it. It is
+gitignored, so it does not affect the build or the deploy; it still holds live Supabase/NextAuth/Blob
+credentials on the local machine and should be deleted and the credentials rotated by hand.
+
+- [x] **Step 7: Commit**
 
 ```bash
 git add -A -- package.json package-lock.json next.config.mjs .env .env.example
