@@ -1,30 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-
-// TODO(Task 2): replace these with `import type { Project, WritingPost } from "@/types";`
-export interface Project {
-  slug: string;
-  title: string;
-  summary: string;
-  description: string;
-  imageUrl: string | null;
-  techStack: string[];
-  githubUrl: string | null;
-  liveUrl: string | null;
-  featured: boolean;
-  order: number;
-}
-
-export interface WritingPost {
-  slug: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  coverImage: string | null;
-  published: boolean;
-  publishedAt: string | null;
-}
+import type { Project, WritingPost } from "@/types";
 
 const PROJECTS_DIR = path.join(process.cwd(), "content/projects");
 const WRITING_DIR = path.join(process.cwd(), "content/writing");
