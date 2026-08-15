@@ -3,18 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import readingTime from "reading-time";
-import { prisma } from "@/lib/prisma";
+import { getAllPublishedPosts, getPostBySlug } from "@/lib/content";
 import { Markdown } from "@/components/ui/Markdown";
 import { formatDate } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export async function generateStaticParams() {
+  return getAllPublishedPosts().map((post) => ({ slug: post.slug }));
+}
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.writingPost.findUnique({ where: { slug } });
-  if (!post || !post.published) return {};
+  const post = getPostBySlug(slug);
+  if (!post) return {};
   return {
     title: post.title,
     description: post.excerpt,
@@ -28,9 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function WritingPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await prisma.writingPost.findUnique({ where: { slug } });
-  // Draft posts are invisible on the public site entirely (§4.6).
-  if (!post || !post.published) notFound();
+  // getPostBySlug returns null for drafts, so they're invisible on the public site entirely.
+  const post = getPostBySlug(slug);
+  if (!post) notFound();
 
   const stats = readingTime(post.content);
 
