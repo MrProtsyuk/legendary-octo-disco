@@ -2,9 +2,9 @@ import Link from "next/link";
 import { HeroConstellation } from "@/components/motion/HeroConstellation";
 
 const socials = [
-  { label: "GitHub", href: "https://github.com/markprotsyuk" },
+  { label: "GitHub", href: "https://github.com/MrProtsyuk" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/markprotsyuk" },
-  { label: "Instagram", href: "https://www.instagram.com/markprotsyuk" },
+  { label: "Instagram", href: "https://www.instagram.com/mark.protsyuk" },
 ];
 
 // Home stays minimal (§4.2): hero + socials + resume. Work is one click away.
@@ -13,9 +13,7 @@ export default function HomePage() {
     <div className="relative overflow-hidden">
       <HeroConstellation />
       <section className="relative mx-auto max-w-5xl px-6 py-28 sm:py-40">
-        <p className="font-mono text-sm text-accent mb-4">
-          software engineer
-        </p>
+        <p className="font-mono text-sm text-accent mb-4">software engineer</p>
         <h1 className="font-display text-4xl sm:text-6xl font-semibold tracking-tight leading-[1.1] max-w-3xl">
           Precision from math, presence from theatre, patience from long runs.
         </h1>
