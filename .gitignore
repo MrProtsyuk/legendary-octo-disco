@@ -95,3 +95,5 @@ node_modules/
 next-env.d.ts
 *.tsbuildinfo
 .vercel
+# Playwright MCP browser artifacts
+.playwright-mcp/
