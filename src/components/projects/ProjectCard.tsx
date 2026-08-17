@@ -15,14 +15,16 @@ export function ProjectCard({ project }: { project: Project }) {
         href={`/projects/${project.slug}`}
         className="pulse-border block rounded-xl border border-line bg-surface overflow-hidden hover:border-muted transition-colors h-full"
       >
+        {/* contain, not cover: shots are often wide terminal/UI crops that
+            cover would slice in half. */}
         {project.imageUrl ? (
-          <div className="relative aspect-[16/9] border-b border-line">
+          <div className="relative aspect-[16/9] border-b border-line bg-bg">
             <Image
               src={project.imageUrl}
               alt={project.title}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
+              className="object-contain p-4"
             />
           </div>
         ) : (

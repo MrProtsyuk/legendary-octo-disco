@@ -66,14 +66,16 @@ export default async function ProjectDetailPage({ params }: Props) {
         </div>
       )}
 
+      {/* A wide, shallow mat: screenshots here are usually UI/terminal crops,
+          and contain in a 16/9 frame left them swimming in dead space. */}
       {project.imageUrl && (
-        <div className="relative aspect-[16/9] mt-10 rounded-xl overflow-hidden border border-line">
+        <div className="relative aspect-[21/9] mt-10 rounded-xl overflow-hidden border border-line bg-surface">
           <Image
             src={project.imageUrl}
             alt={project.title}
             fill
             sizes="(max-width: 768px) 100vw, 672px"
-            className="object-cover"
+            className="object-contain p-5"
             priority
           />
         </div>
